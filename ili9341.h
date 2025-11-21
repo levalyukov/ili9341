@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "../../logger.h"
+#include "logger.h"
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 #include "driver/adc.h"
