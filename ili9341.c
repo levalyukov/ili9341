@@ -10,12 +10,6 @@ esp_err_t ili9341_setup(gpio_num_t _led, gpio_num_t _cs,
     return ESP_ERR_NO_MEM;
   };
 
-  display->led = _led;
-  gpio_reset_pin(display->led);
-  gpio_set_direction(display->led, GPIO_MODE_OUTPUT);
-  gpio_set_pull_mode(display->led, GPIO_FLOATING);
-  gpio_set_level(display->led, 1);
-
   display->cs = _cs;
   display->miso = _miso;
   display->mosi = _mosi;
@@ -58,7 +52,7 @@ esp_err_t ili9341_spi_connect(void) {
     .address_bits = 0 /* <-- The display does not use it. */
   };
 
-  if (spi_bus_initialize(HSPI_HOST, &display->buscfg, SPI_DMA_DISABLED) != ESP_OK) {
+  if (spi_bus_initialize(HSPI_HOST, &display->buscfg, SPI_DMA_CH_AUTO) != ESP_OK) {
     LOG_ERROR("Error while initializing SPI bus");
     return ESP_FAIL;
   };
@@ -143,20 +137,20 @@ void ili9341_reset(void) {
   vTaskDelay(pdMS_TO_TICKS(300));
 };
 
-esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t height, uint16_t width) {
-  if ((x+width >= WIDTH) || (y+height >= HEIGHT)) return ESP_ERR_INVALID_ARG;
+esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t h, uint16_t w) {
+  if ((x+w >= WIDTH) || (y+h >= HEIGHT)) return ESP_ERR_INVALID_ARG;
 
   write_command(0x2A);
   write_data(x>>8);
   write_data(x&0xFF);
-  write_data((x+width-1)>>8); 
-  write_data((x+width-1)&0xFF);
+  write_data((x+w-1)>>8); 
+  write_data((x+w-1)&0xFF);
 
   write_command(0x2B);
   write_data(y>>8);
   write_data(y&0xFF);
-  write_data((y+height-1)>>8);
-  write_data((y+height-1)&0xFF);
+  write_data((y+h-1)>>8);
+  write_data((y+h-1)&0xFF);
 
   write_command(0x2C);
 
