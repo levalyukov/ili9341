@@ -11,7 +11,7 @@ During the development process, I used the technical documentation (provided bel
 ## Methods
 #### Initializing the display
 ```c
-esp_err_t ili9341_setup(gpio_num_t _led, gpio_num_t _cs, gpio_num_t _dc, 
+esp_err_t ili9341_setup(gpio_num_t _cs, gpio_num_t _dc, 
   gpio_num_t _reset, gpio_num_t _miso, gpio_num_t _mosi, gpio_num_t _sclk);
 ```
 #### Connecting the display using the SPI interface
