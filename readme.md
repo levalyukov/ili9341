@@ -20,11 +20,11 @@ esp_err_t ili9341_spi_connect(void);
 ```
 #### Sending command on the display
 ```c
-esp_err_t write_command(uint16_t cmd);
+esp_err_t ili9341_write_command(uint16_t cmd);
 ```
 #### Sending data on the display
 ```c
-esp_err_t write_command(uint16_t cmd);
+esp_err_t ili9341_write_command(uint16_t cmd);
 ```
 #### Hardware reset the display
 ```c
