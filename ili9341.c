@@ -6,7 +6,7 @@ esp_err_t ili9341_setup(gpio_num_t _led, gpio_num_t _cs,
   gpio_num_t _mosi, gpio_num_t _sclk) {
   display = (struct tft*)malloc(sizeof(struct tft));
   if (display == NULL) {
-    LOG_ERROR("Error to allocate memory for the display structure.");
+    printf("Error to allocate memory for the display structure.\n");
     return ESP_ERR_NO_MEM;
   };
 
@@ -15,7 +15,7 @@ esp_err_t ili9341_setup(gpio_num_t _led, gpio_num_t _cs,
   display->mosi = _mosi;
   display->sclk = _sclk;
   if (ili9341_spi_connect() != ESP_OK) {
-    LOG_ERROR("Error while connection spi interface for the display.");
+    printf("Error while connection spi interface for the display.\n");
     return ESP_FAIL;
   };
 
@@ -28,7 +28,7 @@ esp_err_t ili9341_setup(gpio_num_t _led, gpio_num_t _cs,
 
   ili9341_reset();
   if (ili9341_init() != ESP_OK) {
-    LOG_ERROR("Error while initializating the display.");
+    printf("Error while initializating the display.\n");
     return ESP_FAIL;
   };
 
@@ -53,70 +53,70 @@ esp_err_t ili9341_spi_connect(void) {
   };
 
   if (spi_bus_initialize(HSPI_HOST, &display->buscfg, SPI_DMA_CH_AUTO) != ESP_OK) {
-    LOG_ERROR("Error while initializing SPI bus");
+    printf("Error while initializing SPI bus.\n");
     return ESP_FAIL;
   };
 
   if (spi_bus_add_device(HSPI_HOST, &display->devcfg, &display->spi) != ESP_OK) {
-    LOG_ERROR("Error while adding device to SPI bus");
+    printf("Error while adding device to SPI bus.\n");
     return ESP_FAIL;
   };
 
   return ESP_OK;
 };
 
-esp_err_t write_command(uint16_t cmd) {
+esp_err_t ili9341_write_command(uint16_t cmd) {
   gpio_set_level(display->dc, 0);
   spi_transaction_t t;
   memset(&t, 0, sizeof(t));
   t.length = 8;
   t.tx_buffer = &cmd;
   if (spi_device_polling_transmit(display->spi, &t) != ESP_OK) {
-    LOG_ERROR("Error while sending the command.");
+    printf("Error while sending the command.\n");
     return ESP_FAIL;
   }; return ESP_OK;
 };
 
-esp_err_t write_data(uint16_t data) {
+esp_err_t ili9341_write_data(uint16_t data) {
   gpio_set_level(display->dc, 1);
   spi_transaction_t t;
   memset(&t, 0, sizeof(t));
   t.length = 8;
   t.tx_buffer = &data;
   if (spi_device_polling_transmit(display->spi, &t) != ESP_OK) {
-    LOG_ERROR("Error while sending the data.");
+    printf("Error while sending the data.\n");
     return ESP_FAIL;
   }; return ESP_OK;
 };
 
 esp_err_t ili9341_init(void) {
   /* Exit Sleep, need 800 ms delay. */
-  if (write_command(0x11)) {
-    LOG_ERROR("Error (exit sleep)");
+  if (ili9341_write_command(0x11)) {
+    printf("Error (exit sleep)\n");
     return ESP_FAIL;
   }; vTaskDelay(pdMS_TO_TICKS(800));
 
   /* Display ON */
-  if (write_command(0x29) != ESP_OK) {
-    LOG_ERROR("Error (display on)");
+  if (ili9341_write_command(0x29) != ESP_OK) {
+    printf("Error (display on)\n");
     return ESP_FAIL;
   }; vTaskDelay(pdMS_TO_TICKS(10));
 
   /* Set COLMOD with parameter "16 bits per pixel, one data per pixel" */
-  if (write_command(0x3A) != ESP_OK || write_data(0x55) != ESP_OK) {
-    LOG_ERROR("Error (colmod)");
+  if (ili9341_write_command(0x3A) != ESP_OK || ili9341_write_data(0x55) != ESP_OK) {
+    printf("Error (colmod)\n");
     return ESP_FAIL;
   };
 
   /* Set Memory Access Control */
-  if (write_command(0x36) != ESP_OK) {
-    LOG_ERROR("Error (mac)");
+  if (ili9341_write_command(0x36) != ESP_OK) {
+    printf("Error (mac)\n");
     return ESP_FAIL;
-  }; write_data(0x48);
+  }; ili9341_write_data(0x48);
 
   /* Enabled 3G + disabled 3 Gamma*/
-  if (write_command(0xF2) != ESP_OK || write_data(0x0F) != ESP_OK) {
-    LOG_ERROR("Error (3g)");
+  if (ili9341_write_command(0xF2) != ESP_OK || ili9341_write_data(0x0F) != ESP_OK) {
+    printf("Error (3g)\n");
     return ESP_FAIL;
   };
 
@@ -140,19 +140,19 @@ void ili9341_reset(void) {
 esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t h, uint16_t w) {
   if ((x+w >= WIDTH) || (y+h >= HEIGHT)) return ESP_ERR_INVALID_ARG;
 
-  write_command(0x2A);
-  write_data(x>>8);
-  write_data(x&0xFF);
-  write_data((x+w-1)>>8); 
-  write_data((x+w-1)&0xFF);
+  ili9341_write_command(0x2A);
+  ili9341_write_data(x>>8);
+  ili9341_write_data(x&0xFF);
+  ili9341_write_data((x+w-1)>>8); 
+  ili9341_write_data((x+w-1)&0xFF);
 
-  write_command(0x2B);
-  write_data(y>>8);
-  write_data(y&0xFF);
-  write_data((y+h-1)>>8);
-  write_data((y+h-1)&0xFF);
+  ili9341_write_command(0x2B);
+  ili9341_write_data(y>>8);
+  ili9341_write_data(y&0xFF);
+  ili9341_write_data((y+h-1)>>8);
+  ili9341_write_data((y+h-1)&0xFF);
 
-  write_command(0x2C);
+  ili9341_write_command(0x2C);
 
   return ESP_OK;
 };
@@ -160,8 +160,8 @@ esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t h, uint16_
 esp_err_t ili9341_draw_pixel(uint16_t x, uint16_t y, uint16_t color) {
   if ((x >= WIDTH) || (y >= HEIGHT)) return ESP_ERR_INVALID_ARG;
   ili9341_set_address_window(x,y,1,1);
-  write_data(color>>8);
-  write_data(color&0xFF);
-  write_command(0x2C);
+  ili9341_write_data(color>>8);
+  ili9341_write_data(color&0xFF);
+  ili9341_write_command(0x2C);
   return ESP_OK;
 };

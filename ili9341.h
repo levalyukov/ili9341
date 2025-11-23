@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "logger.h"
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 #include "driver/adc.h"
@@ -12,8 +11,8 @@
 #define HEIGHT  320
 #define WIDTH   240
 
-#define ILI93141_WHITE  0xFFFF
-#define ILI93141_BLACK  0x0000
+#define ILI9341_WHITE   0xFFFF
+#define ILI9341_BLACK   0x0000
 #define ILI9341_RED     0xF800
 #define ILI9341_GREEN   0x07E0
 #define ILI9341_BLUE    0x00F1
@@ -28,8 +27,8 @@ struct tft {
 esp_err_t ili9341_setup(gpio_num_t _cs, gpio_num_t _dc, gpio_num_t _reset, 
   gpio_num_t _miso, gpio_num_t _mosi, gpio_num_t _sclk);
 esp_err_t ili9341_spi_connect(void);
-esp_err_t write_command(uint16_t cmd);
-esp_err_t write_data(uint16_t data);
+esp_err_t ili9341_write_command(uint16_t cmd);
+esp_err_t ili9341_write_data(uint16_t data);
 esp_err_t ili9341_init(void);
 
 void ili9341_reset(void);
