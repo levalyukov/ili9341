@@ -90,35 +90,44 @@ esp_err_t ili9341_write_data(uint16_t data) {
 };
 
 esp_err_t ili9341_init(void) {
-  /* Exit Sleep, need 800 ms delay. */
-  if (ili9341_write_command(0x11)) {
-    printf("Error (exit sleep)\n");
+  /* Software reset */
+  if (ili9341_write_data(context,0x01) != ESP_OK) {
+    LOG_ERROR("Error while software reset of the display.");
+    return ESP_FAIL;
+  };
+
+  /* Exit Sleep, need 800 ms delay */
+  if (ili9341_write_command(context,0x11) != ESP_OK) {
+    LOG_ERROR("Error while exit the display out of sleep.");
     return ESP_FAIL;
   }; vTaskDelay(pdMS_TO_TICKS(800));
 
-  /* Display ON */
-  if (ili9341_write_command(0x29) != ESP_OK) {
-    printf("Error (display on)\n");
+  /* Set COLMOD with parameter "16 bits per pixel, one data per pixel" */
+  if (ili9341_write_command(context,0x3A) != ESP_OK 
+  || ili9341_write_data(context,0x55) != ESP_OK) {
+    LOG_ERROR("Error while enabled colmod of the display.");
+    return ESP_FAIL;
+  };
+
+  /* MADCTL */
+  if (ili9341_write_command(context,0x36) != ESP_OK 
+  || ili9341_write_data(context,0x48) != ESP_OK) {
+    LOG_ERROR("Error while config MADCTL of the display.");
+    return ESP_FAIL;
+  };
+
+  /* Set Gamma */
+  if (ili9341_write_command(context,0xF2) != ESP_OK 
+  || ili9341_write_data(context,0x0F) != ESP_OK) {
+    LOG_ERROR("Error while set gamme of the display.");
+    return ESP_FAIL;
+  };
+
+  /* ili9341 ON */
+  if (ili9341_write_command(context,0x29) != ESP_OK) {
+    LOG_ERROR("Error while enabled the display.");
     return ESP_FAIL;
   }; vTaskDelay(pdMS_TO_TICKS(10));
-
-  /* Set COLMOD with parameter "16 bits per pixel, one data per pixel" */
-  if (ili9341_write_command(0x3A) != ESP_OK || ili9341_write_data(0x55) != ESP_OK) {
-    printf("Error (colmod)\n");
-    return ESP_FAIL;
-  };
-
-  /* Set Memory Access Control */
-  if (ili9341_write_command(0x36) != ESP_OK) {
-    printf("Error (mac)\n");
-    return ESP_FAIL;
-  }; ili9341_write_data(0x48);
-
-  /* Enabled 3G + disabled 3 Gamma*/
-  if (ili9341_write_command(0xF2) != ESP_OK || ili9341_write_data(0x0F) != ESP_OK) {
-    printf("Error (3g)\n");
-    return ESP_FAIL;
-  };
 
   return ESP_OK;
 };
@@ -160,8 +169,8 @@ esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t h, uint16_
 esp_err_t ili9341_draw_pixel(uint16_t x, uint16_t y, uint16_t color) {
   if ((x >= WIDTH) || (y >= HEIGHT)) return ESP_ERR_INVALID_ARG;
   ili9341_set_address_window(x,y,1,1);
-  ili9341_write_data(color>>8);
-  ili9341_write_data(color&0xFF);
+  ili9341_write_data(((color>>8)|(color<<8))&0xFF);
+  ili9341_write_data(((color>>8)|(color<<8))>>8);
   ili9341_write_command(0x2C);
   return ESP_OK;
 };

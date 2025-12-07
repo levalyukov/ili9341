@@ -16,6 +16,7 @@
 #define ILI9341_RED     0xF800
 #define ILI9341_GREEN   0x07E0
 #define ILI9341_BLUE    0x00F1
+#define ILI9341_YELLOW  0xFFE0
 
 struct tft {
   gpio_num_t cs,dc,reset,miso,mosi,sclk;

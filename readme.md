@@ -1,6 +1,6 @@
-# ILI9341 Library
+# ILI9341 Driver
 
-Basic library for ILI9341 display on ESP-IDF. The display is connected using the SPI interface.
+Basic driver for ILI9341 display on ESP-IDF. The display is connected using the SPI interface.
 
 During the development process, I used the technical documentation (provided below), analyzed the code of working libraries ([Adafruit ILI9341](https://github.com/adafruit/Adafruit_ILI9341), [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)) and [reddit.com/r/esp32](https://reddit.com/r/esp32):
 - https://wiki.amperka.ru/_media/products:display-raspberry-pi-2n8in-spi:ili9341_datasheet.pdf
@@ -35,6 +35,8 @@ void ili9341_reset(void);
 esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t height, uint16_t width);
 ```
 #### Drawing pixel on the display
+> [!WARNING]  
+> The display displays colors in BGR format, not RGB, so swap the bits to display the colors correctly if you supplement this driver (library).
 ```c
 esp_err_t ili9341_draw_pixel(uint16_t x, uint16_t y, uint16_t color);
 ```
