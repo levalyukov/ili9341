@@ -24,7 +24,7 @@ esp_err_t ili9341_write_command(uint16_t cmd);
 ```
 #### Sending data on the display
 ```c
-esp_err_t ili9341_write_command(uint16_t cmd);
+esp_err_t ili9341_write_data(uint16_t data);
 ```
 #### Hardware reset the display
 ```c
