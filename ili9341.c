@@ -45,17 +45,16 @@ esp_err_t ili9341_spi_connect(void) {
   };
 
   display->devcfg = (spi_device_interface_config_t) {
-    .clock_speed_hz = 10 * 1000 * 1000,
+    .clock_speed_hz = 33 * 1000 * 1000,
     .mode = 0,
     .spics_io_num = display->cs,
     .queue_size = 7,
     .address_bits = 0 /* <-- The display does not use it. */
   };
 
-  if (spi_bus_initialize(HSPI_HOST, &display->buscfg, SPI_DMA_CH_AUTO) != ESP_OK) {
+  if (spi_bus_initialize(
+  HSPI_HOST, &display->buscfg, SPI_DMA_CH_AUTO) != ESP_OK) 
     printf("Error while initializing SPI bus.\n");
-    return ESP_FAIL;
-  };
 
   if (spi_bus_add_device(HSPI_HOST, &display->devcfg, &display->spi) != ESP_OK) {
     printf("Error while adding device to SPI bus.\n");
