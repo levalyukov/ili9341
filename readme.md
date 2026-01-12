@@ -11,28 +11,43 @@ During the development process, I used the technical documentation (provided bel
 ## Methods
 #### Initializing the display
 ```c
-esp_err_t ili9341_setup(gpio_num_t _cs, gpio_num_t _dc, 
-  gpio_num_t _reset, gpio_num_t _miso, gpio_num_t _mosi, gpio_num_t _sclk);
+esp_err_t ili9341_begin(gpio_num_t cs, gpio_num_t dc, gpio_num_t reset, 
+  gpio_num_t miso, gpio_num_t mosi, gpio_num_t sclk, uint8_t speed_mhz);
 ```
+
+#### Deinit the display
+```c
+esp_err_t ili9341_stop(void);
+```
+
+### Basic initialization of the display
+```c
+esp_err_t ili9341_init(void);
+```
+
 #### Connecting the display using the SPI interface
 ```c
-esp_err_t ili9341_spi_connect(void);
+esp_err_t _ili9341_spi_connect(uint8_t speed_mhz);
 ```
+
 #### Sending command on the display
 ```c
 esp_err_t ili9341_write_command(uint16_t cmd);
 ```
+
 #### Sending data on the display
 ```c
 esp_err_t ili9341_write_data(uint16_t data);
 ```
+
 #### Hardware reset the display
 ```c
 void ili9341_reset(void);
 ```
+
 #### Setting the rendering window
 ```c
-esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t height, uint16_t width);
+esp_err_t ili9341_set_addr(uint16_t x, uint16_t y, uint16_t height, uint16_t width);
 ```
 
 ## Example code
