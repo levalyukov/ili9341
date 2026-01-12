@@ -34,15 +34,20 @@ void ili9341_reset(void);
 ```c
 esp_err_t ili9341_set_address_window(uint16_t x, uint16_t y, uint16_t height, uint16_t width);
 ```
-#### Drawing pixel on the display
-> [!WARNING]  
-> The display displays colors in BGR format, not RGB, so swap the bits to display the colors correctly if you supplement this driver (library).
-```c
-esp_err_t ili9341_draw_pixel(uint16_t x, uint16_t y, uint16_t color);
-```
 
 ## Example code
 
+**CMakeLists.txt**
+```cmake
+FILE(GLOB_RECURSE app *.*)
+FILE(GLOB_RECURSE libs ../lib/*.c)
+idf_component_register(
+  SRCS ${app} ${libs}
+  INCLUDE_DIRS "." ".." "../lib/"
+)
+```
+
+**main.c**
 ```c
 #include <lib/ili9341.h>
 
@@ -62,6 +67,7 @@ void draw_pixel(uint16_t x, uint16_t y, uint16_t color) {
 
   if ((x >= display->width) || (y >= display->height)) return;
   ili9341_set_addr(x,y,1,1);
+  /* The display accepts the BGR format. */ 
   ili9341_write_data(((color>>8)|(color<<8))&0xFF);
   ili9341_write_data(((color>>8)|(color<<8))>>8);
   ili9341_write_command(0x2C);
