@@ -43,7 +43,13 @@ esp_err_t ili9341_begin(gpio_num_t cs, gpio_num_t dc, gpio_num_t reset,
 
 esp_err_t ili9341_stop(void) {
   if (display) {
+    if (spi_bus_remove_device(display->spi) != ESP_OK) {
+      puts("Error while remove device.");
+      return ESP_FAIL;
+    };
+    
     free(display);
+    display = NULL;
     puts("Display deinit.");
     return ESP_OK;
   } else return ESP_FAIL;
