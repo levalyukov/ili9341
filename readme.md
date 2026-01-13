@@ -92,7 +92,7 @@ void app_main(void) {
   if (ili9341_begin(TFT_CS, TFT_DC, TFT_RESET, 
   TFT_MISO, TFT_MOSI, TFT_SCLK, TFT_SPEED) != ESP_OK) {
     puts("Error while initialized the ili9341.");
-  } else printf("ILI9341 is initialized");
+  } else puts("ILI9341 is initialized");
 
   for (int i = 0; i < 32; i++) {
     for (int j = 0; j < 32; j++) 
